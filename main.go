@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/hashicorp/terraform/plugin"
-	"github.com/russellcardullo/terraform-provider-pingdom/pingdom"
+	"github.com/Stremio/terraform-provider-pingdom/pingdom"
 )
 
 func main() {

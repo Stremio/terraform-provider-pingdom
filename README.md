@@ -8,7 +8,7 @@ This currently only supports working with basic HTTP and ping checks.
 
 ### Using released versions ###
 
-Prebuild releases for most platforms are available [here](https://github.com/russellcardullo/terraform-provider-pingdom/releases).
+Prebuild releases for most platforms are available [here](https://github.com/Stremio/terraform-provider-pingdom/releases).
 Download the release corresponding to your particular platform and place in `$HOME/.terraform.d/plugins/[os]_[arch]`.  For instance
 on Linux AMD64 the path would be `$HOME/.terraform.d/plugins/linux_amd64`.
 
@@ -232,8 +232,6 @@ For the HTTP checks, you can set these attributes:
   * **tags** - List of tags the check should contain. Should be in the format "tagA,tagB"
 
   * **probefilters** - Region from which the check should originate. One of NA, EU, APAC, or LATAM. Should be in the format "region:NA"
-
-  * **publicreport** - If `true`, this check will be included in the public report (default: `false`)
 
 #### TCP specific attibutes ####
 

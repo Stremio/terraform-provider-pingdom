@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/russellcardullo/go-pingdom/pingdom"
+	"github.com/Stremio/go-pingdom/pingdom"
 )
 
 func resourcePingdomCheck() *schema.Resource {
@@ -50,12 +50,6 @@ func resourcePingdomCheck() *schema.Resource {
 				Optional: true,
 				ForceNew: false,
 				Computed: true,
-			},
-
-			"publicreport": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				ForceNew: false,
 			},
 
 			"resolution": {
@@ -413,10 +407,6 @@ func resourcePingdomCheckCreate(d *schema.ResourceData, meta interface{}) error 
 
 	d.SetId(strconv.Itoa(ck.ID))
 
-	if v, ok := d.GetOk("publicreport"); ok && v.(bool) {
-		client.PublicReport.PublishCheck(ck.ID)
-	}
-
 	return nil
 }
 
@@ -446,17 +436,6 @@ func resourcePingdomCheckRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Error retrieving check: %s", err)
 	}
-	rl, err := client.PublicReport.List()
-	if err != nil {
-		return fmt.Errorf("Error retrieving list of public report checks: %s", err)
-	}
-	inPublicReport := false
-	for _, ckid := range rl {
-		if ckid.ID == id {
-			inPublicReport = true
-			break
-		}
-	}
 
 	d.Set("host", ck.Hostname)
 	d.Set("name", ck.Name)
@@ -465,7 +444,6 @@ func resourcePingdomCheckRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("sendnotificationwhendown", ck.SendNotificationWhenDown)
 	d.Set("notifyagainevery", ck.NotifyAgainEvery)
 	d.Set("notifywhenbackup", ck.NotifyWhenBackup)
-	d.Set("publicreport", inPublicReport)
 
 	tags := []string{}
 	for _, tag := range ck.Tags {
@@ -557,12 +535,6 @@ func resourcePingdomCheckUpdate(d *schema.ResourceData, meta interface{}) error 
 	_, err = client.Checks.Update(id, check)
 	if err != nil {
 		return fmt.Errorf("Error updating check: %s", err)
-	}
-
-	if v, ok := d.GetOk("publicreport"); ok && v.(bool) {
-		client.PublicReport.PublishCheck(id)
-	} else {
-		client.PublicReport.WithdrawlCheck(id)
 	}
 
 	return nil

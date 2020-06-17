@@ -11,37 +11,16 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"user": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-
-			"password": {
+			"pingdom_api_token": {
 				Type:      schema.TypeString,
-				Optional:  true,
-				Sensitive: true,
-			},
-
-			"api_key": {
-				Type:      schema.TypeString,
-				Optional:  true,
-				Sensitive: true,
-			},
-			"account_email": {
-				Type:      schema.TypeString,
-				Default:   "",
-				Optional:  true,
+				Optional:  false,
+				Required:  true,
 				Sensitive: true,
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"pingdom_check":   resourcePingdomCheck(),
-			"pingdom_team":    resourcePingdomTeam(),
-			"pingdom_user":    resourcePingdomUser(),
-			"pingdom_contact": resourcePingdomContact(),
-		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"pingdom_user": dataSourcePingdomUser(),
+//			"pingdom_contact": resourcePingdomContact(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
