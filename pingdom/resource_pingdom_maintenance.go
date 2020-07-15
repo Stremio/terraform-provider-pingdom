@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
+//	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -84,7 +84,7 @@ type commonParams struct {
 	transactioncheckids []int
 }
 
-func checkForMaintenanceResource(d *schema.ResourceData) (pingdom.Maintenance) {
+func checkForMaintenanceResource(d *schema.ResourceData) (commonParams) {
 	params := commonParams{}
 
 	if v, ok := d.GetOk("description"); ok {
@@ -172,13 +172,13 @@ func resourcePingdomMaintenanceCreate(d *schema.ResourceData, meta interface{}) 
 
 	m := pingdom.MaintenanceWindow{
 		Description: params.description,
-		From:        params.from,
-		To:          params.to,
+		From:        int64(params.from),
+		To:          int64(params.to),
 		EffectiveTo: params.recurrto,
 		RecurrenceType: params.recurrencetype,
 		RepeatEvery: params.repeatevery,
-		Tmsids: params.transactioncheckids,
-		Uptimeids: params.uptimecheckids,
+		TmsIDs: params.transactioncheckids,
+		UptimeIDs: params.uptimecheckids,
 
 	}
 
@@ -187,7 +187,7 @@ func resourcePingdomMaintenanceCreate(d *schema.ResourceData, meta interface{}) 
 		return err
 	}
 
-	d.SetId(strconv.Itoa(ck.ID))
+	d.SetId(strconv.Itoa(maintenance.ID))
 
 	return nil
 }
@@ -263,13 +263,13 @@ func resourcePingdomMaintenanceUpdate(d *schema.ResourceData, meta interface{}) 
 
 	m := pingdom.MaintenanceWindow{
 		Description: params.description,
-		From:        params.from,
-		To:          params.to,
-		Effectiveto: params.recurrto,
-		Recurrencetype: params.recurrencetype,
-		Repeatevery: params.repeatevery,
-		Tmsids: params.transactioncheckids,
-		Uptimeids: params.uptimecheckids,
+		From:        int64(params.from),
+		To:          int64(params.to),
+		EffectiveTo: params.recurrto,
+		RecurrenceType: params.recurrencetype,
+		RepeatEvery: params.repeatevery,
+		TmsIDs: params.transactioncheckids,
+		UptimeIDs: params.uptimecheckids,
 
 	}
 
@@ -295,7 +295,7 @@ func resourcePingdomMaintenanceDelete(d *schema.ResourceData, meta interface{}) 
 
 	m := pingdom.MaintenanceWindow{
 		To:          1,
-		Effectiveto: 1,
+		EffectiveTo: 1,
 	}
 
 	_, err = client.Maintenances.Update(id, &m)
