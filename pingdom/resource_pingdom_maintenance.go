@@ -57,17 +57,15 @@ func resourcePingdomMaintenance() *schema.Resource {
 			},
 
 			"uptimecheckids": {
-				Type:     schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeInt,
-				},
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
 			},
 
 			"transactioncheckids": {
-				Type:     schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeInt,
-				},
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
 			},
 		},
 	}
@@ -80,8 +78,8 @@ type commonParams struct {
 	recurrto int
 	recurrencetype string
 	repeatevery int
-	uptimecheckids []int
-	transactioncheckids []int
+	uptimecheckids string
+	transactioncheckids string
 }
 
 func checkForMaintenanceResource(d *schema.ResourceData) (commonParams) {
@@ -105,21 +103,11 @@ func checkForMaintenanceResource(d *schema.ResourceData) (commonParams) {
 	if v, ok := d.GetOk("repeatevery"); ok {
 		params.repeatevery = v.(int)
 	}
-	if v, ok := d.GetOk("uptimecheckids"); ok {
-		interfaceSlice := v.(*schema.Set).List()
-		var intSlice []int
-		for i := range interfaceSlice {
-			intSlice = append(intSlice, interfaceSlice[i].(int))
-		}
-		params.uptimecheckids = intSlice
+	if v, ok := d.GetOk("uptimecheckids");ok {
+		params.uptimecheckids = v.(string)
 	}
 	if v, ok := d.GetOk("transactioncheckids"); ok {
-		interfaceSlice := v.(*schema.Set).List()
-		var intSlice []int
-		for i := range interfaceSlice {
-			intSlice = append(intSlice, interfaceSlice[i].(int))
-		}
-		params.transactioncheckids = intSlice
+		params.transactioncheckids = v.(string)
 	}
 	return params
 }
@@ -288,8 +276,6 @@ func resourcePingdomMaintenanceDelete(d *schema.ResourceData, meta interface{}) 
 	if err != nil {
 		return fmt.Errorf("Error retrieving id for resource: %s", err)
 	}
-
-	params := checkForMaintenanceResource(d)
 
 	log.Printf("[DEBUG] Maintenance delete configuration: %#v", d.Get("description"))
 
