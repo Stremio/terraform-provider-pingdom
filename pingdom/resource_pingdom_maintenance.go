@@ -52,7 +52,7 @@ func resourcePingdomMaintenance() *schema.Resource {
 
 			"repeatevery": {
 				Type:     schema.TypeInt,
-				Required: false,
+				Optional: true,
 				ForceNew: false,
 			},
 
