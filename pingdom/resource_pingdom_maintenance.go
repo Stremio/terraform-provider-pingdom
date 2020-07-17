@@ -227,6 +227,10 @@ func resourcePingdomMaintenanceUpdate(d *schema.ResourceData, meta interface{}) 
 
 	log.Printf("[DEBUG] Maintenance update configuration: %#v", d.Get("description"))
 
+	if (params.recurrto <= int(params.to) ) {
+		params.recurrto = int(params.to)
+	}
+
 	m := pingdom.MaintenanceWindow{
 		Description: params.description,
 		From:        params.from,
@@ -258,6 +262,8 @@ func resourcePingdomMaintenanceDelete(d *schema.ResourceData, meta interface{}) 
 	log.Printf("[DEBUG] Maintenance delete configuration: %#v", d.Get("description"))
 
 	m := pingdom.MaintenanceWindow{
+		Description: "To Delete",
+		From:		 1,
 		To:          1,
 		EffectiveTo: 1,
 	}
