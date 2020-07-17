@@ -73,8 +73,8 @@ func resourcePingdomMaintenance() *schema.Resource {
 
 type commonParams struct {
 	description string
-	from int
-	to int
+	from int64
+	to int64
 	recurrto int
 	recurrencetype string
 	repeatevery int
@@ -89,13 +89,13 @@ func checkForMaintenanceResource(d *schema.ResourceData) (commonParams) {
 		params.description = v.(string)
 	}
 	if v, ok := d.GetOk("from"); ok {
-		params.from = v.(int)
+		params.from = reformatDate(v.(string))
 	}
 	if v, ok := d.GetOk("to"); ok {
-		params.to = v.(int)
+		params.to = reformatDate(v.(string))
 	}
 	if v, ok := d.GetOk("recurrto"); ok {
-		params.recurrto = v.(int)
+		params.recurrto = int(reformatDate(v.(string)))
 	}
 	if v, ok := d.GetOk("recurrencetype"); ok {
 		params.recurrencetype = v.(string)
@@ -112,43 +112,21 @@ func checkForMaintenanceResource(d *schema.ResourceData) (commonParams) {
 	return params
 }
 
-func reformatDate(input string) int{
-	if(input == "now"){
-		return 1;
+func reformatDate(input string) int64 {
+	if input == "now" {
+		return time.Now().Unix()
 	}
 
-	currentTime := time.Now()
-	var currentTimeString string
-	currentTimeString = currentTime.Format("02-01-2006 15:04:05")
-	var currentYear, currentMonth, currentDay, currentHour, currentMinute, currentSecond int
-	currentDay, _ = strconv.Atoi(currentTimeString[0:2])
-	currentMonth, _ = strconv.Atoi(currentTimeString[3:5])
-	currentYear, _ = strconv.Atoi(currentTimeString[6:10])
-	currentHour, _ = strconv.Atoi(currentTimeString[11:13])
-	currentMinute, _ = strconv.Atoi(currentTimeString[14:16])
-	currentSecond, _ = strconv.Atoi(currentTimeString[17:19])
+	rtime, error := time.Parse(time.RFC3339, input)
 
-	var inputYear, inputMonth, inputDay, inputHour, inputMinute, inputSecond int
-	inputDay, _ = strconv.Atoi(input[0:2])
-	inputMonth, _ = strconv.Atoi(input[3:5])
-	inputYear, _ = strconv.Atoi(input[6:10])
-	inputHour, _ = strconv.Atoi(input[11:13])
-	inputMinute, _ = strconv.Atoi(input[14:16])
-	inputSecond, _ = strconv.Atoi(input[17:19])
+	if error!= nil {
+		fmt.Errorf("Invalid time spec %s:  %#v", input, error)
+		return -1
+	}
 
-	var diffYear, diffMonth, diffDay, diffHour, diffMinute, diffSecond int
-	diffYear = inputYear - currentYear
-	diffMonth = inputMonth - currentMonth
-	diffDay = inputDay - currentDay
-	diffHour = inputHour - currentHour
-	diffMinute = inputMinute - currentMinute
-	diffSecond = inputSecond - currentSecond
+	log.Printf("[DEBUG] Maintenance reformatDate %s configuration: %#v", input, rtime)
 
-	location, _ := time.LoadLocation("Europe/Sofia")
-	toconv := time.Date(1970, time.January, 1, diffHour, diffMinute, diffSecond, 0, location)
-	toconv = toconv.AddDate(diffYear, diffMonth, diffDay)
-	return int(toconv.Unix()+7200)
-
+	return rtime.Unix()
 }
 
 func resourcePingdomMaintenanceCreate(d *schema.ResourceData, meta interface{}) error {
@@ -160,8 +138,8 @@ func resourcePingdomMaintenanceCreate(d *schema.ResourceData, meta interface{}) 
 
 	m := pingdom.MaintenanceWindow{
 		Description: params.description,
-		From:        int64(params.from),
-		To:          int64(params.to),
+		From:        params.from,
+		To:          params.to,
 		EffectiveTo: params.recurrto,
 		RecurrenceType: params.recurrencetype,
 		RepeatEvery: params.repeatevery,
@@ -251,8 +229,8 @@ func resourcePingdomMaintenanceUpdate(d *schema.ResourceData, meta interface{}) 
 
 	m := pingdom.MaintenanceWindow{
 		Description: params.description,
-		From:        int64(params.from),
-		To:          int64(params.to),
+		From:        params.from,
+		To:          params.to,
 		EffectiveTo: params.recurrto,
 		RecurrenceType: params.recurrencetype,
 		RepeatEvery: params.repeatevery,
