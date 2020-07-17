@@ -128,6 +128,17 @@ resource "pingdom_check" "example" {
 }
 ```
 
+**Maintenance Window**
+
+```
+resource "pingdom_maintenance" "test" {
+  description = "test"
+  from = "2020-07-17T13:41:20Z"
+  to = "2020-07-17T16:43:00Z"
+  uptimecheckids = "63478,321631"
+}
+```
+
 **Teams**
 
 ```
@@ -246,6 +257,24 @@ For the TCP checks, you can set these attributes:
 The following attributes are exported:
 
   * **id** The ID of the Pingdom check
+
+### Pingdom Maintenance Window ###
+
+  * **description** - (Required) The descripption of the maintenance window
+
+  * **from** - (Required) The time the maintenance window begins(format:"yyyy-mm-ddThh:mm:ss(Timezone))
+
+  * **to** - (Required) The time the maintenance window ends(format:"yyyy-mm-ddThh:mm:ss(Timezone))
+
+  * **recurrto** - Recurrence end. Default: equal to **to**
+
+  * **recurrencetype** - Type of recurrence. Valid options ```"none"```, ```"day"```, ```"week"```, ```"month"```
+
+  * **repeatevery** - Repeat every n-th day/week/month
+
+  * **uptimecheckids** - Identifiers of uptime checks to assign to the maintenance window 
+
+  * **transactioncheckids** - Identifiers of transaction checks to assign to the maintenance window
 
 
 ### Pingdom Team ###
