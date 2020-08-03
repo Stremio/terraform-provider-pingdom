@@ -139,55 +139,6 @@ resource "pingdom_maintenance" "test" {
 }
 ```
 
-**Teams**
-
-```
-resource "pingdom_team" "test" {
-  name = "The Test team"
-}
-```
-
-**Users**
-
-```
-resource "pingdom_user" "first_user" {
-  username = "johndoe"
-}
-
-resource "pingdom_user" "second_user" {
-  username = "janedoe"
-}
-```
-
-**Contacts**
-
-```
-
-resource "pingdom_contact" "first_user_contact_email_2" {
-  user_id        = "${pingdom_user.first_user.id}"
-  email          = "john.doe@doe.com"
-  severity_level = "LOW"
-}
-
-resource "pingdom_contact" "first_user_contact_sms_1" {
-  user_id        = "${pingdom_user.first_user.id}"
-  number         = "700000000"
-  country_code   = "33"
-  phone_provider = "nexmo"
-  severity_level = "HIGH"
-}
-
-resource "pingdom_user" "second_user" {
-  username = "janedoe"
-}
-
-resource "pingdom_contact" "second_user_contact_email_1" {
-  user_id        = "${pingdom_user.second_user.id}"
-  email          = "jane@doe.com"
-  severity_level = "high"
-}
-```
-
 ## Resources ##
 
 ### Pingdom Check ###
@@ -275,28 +226,3 @@ The following attributes are exported:
   * **uptimecheckids** - Identifiers of uptime checks to assign to the maintenance window 
 
   * **transactioncheckids** - Identifiers of transaction checks to assign to the maintenance window
-
-
-### Pingdom Team ###
-
-  * **name** - (Required) The name of the team
-
-
-### Pingdom User ###
-
-  * **username** - (Required) The name of the user
-
-
-### Pingdom Contact ###
-
-  * **user_id**: (Required) ID of the user linked to this contact
-
-  * **severity_level**: (Required) Severity level for target
-
-  * **email**: Email
-
-  * **number**: Cellphone number, without the country code part. (Requires countrycode)
-
-  * **country_code**: Cellphone country code (Requires number)
-
-  * **phone_provider**: SMS provider (Requires number and countrycode)
